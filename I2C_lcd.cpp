@@ -13,6 +13,17 @@
 // download the repository from here and put it in your documents/arduino/libraries folder and restart your ide 
 // https://bitbucket.org/fmalpartida/new-liquidcrystal/downloads
 // adaptations needed to work with arduino version 0023
+/*
+LiquidCrystal_I2C_ByVac.h
+
+change from 
+#include <Arduino.h>
+to
+#include <WProgram.h>
+#else
+#include <Arduino.h>
+#endif
+*/
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -53,6 +64,9 @@ extern const char* status_str[] ;              // hook status strings
 extern const char* error_code_str[] ;          // hook to error strings
 
 char  szTemp[41];                              // temp work aria for sprintf
+char  szT[41] ;                                // workspace for float to string conversions
+bool  bNewStatusScreen = true;
+float faOldPosition[NUM_AXIS] = { -1, -1, -1, 0.0};
 
 LiquidCrystal_I2C  lcd(I2C_ADDR,En_pin,Rw_pin,Rs_pin,D4_pin,D5_pin,D6_pin,D7_pin);
 
@@ -64,9 +78,12 @@ LiquidCrystal_I2C  lcd(I2C_ADDR,En_pin,Rw_pin,Rs_pin,D4_pin,D5_pin,D6_pin,D7_pin
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 void StatusScreen(){
-  char szT[40] ;    // workspace
-  lcd.clear();
-  lcd.home();
+  
+  if( bNewStatusScreen ) {
+    lcd.clear();
+    lcd.home();
+    bNewStatusScreen=false;
+  }
   
   // do first line 
   
@@ -80,21 +97,10 @@ void StatusScreen(){
   lcd.print( szTemp );
 
   // do second line
-  
-  lcd.setCursor( 0, 1 );
-  ConvertleadingSpacesToZeros( dtostrf( current_position[0], NUM_DIGITS, NUM_PRECISION, szT) );
-  sprintf( szTemp, "X%s", szT+2 );
-  lcd.print( szTemp );
-  
-  lcd.setCursor(7,1);
-  ConvertleadingSpacesToZeros( dtostrf( current_position[1], NUM_DIGITS, NUM_PRECISION, szT) );
-  sprintf( szTemp, "Y%s", szT+2 );
-  lcd.print(szTemp);
-  
-  lcd.setCursor(14,1);
-  ConvertleadingSpacesToZeros( dtostrf( current_position[2], NUM_DIGITS, NUM_PRECISION, szT) );
-  sprintf( szTemp, "Z%s", szT+2 );
-  lcd.print(szTemp);
+
+  DisplayAxisPosition( 0 );
+  DisplayAxisPosition( 1 );
+  DisplayAxisPosition( 2 );
 
   // do third line
   
@@ -136,6 +142,23 @@ void SplashScreen() {
   lcd.setCursor(6,3);
   lcd.print("Sprinter");
   delay(4000);
+  bNewStatusScreen = true;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// void DisplayAxisPosition( int iAxis )
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+void DisplayAxisPosition( int iAxis ) {
+  if( faOldPosition[iAxis] != current_position[iAxis] ) {
+    lcd.setCursor( 7*iAxis, 1 );
+    ConvertleadingSpacesToZeros( dtostrf( current_position[iAxis], NUM_DIGITS, NUM_PRECISION, szT) );
+    sprintf( szTemp, "%c%s", 'X'+iAxis, szT+2 );
+    lcd.print( szTemp );
+    faOldPosition[iAxis] = current_position[iAxis] ;
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////

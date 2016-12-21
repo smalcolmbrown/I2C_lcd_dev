@@ -19,6 +19,17 @@
 #include <LiquidCrystal_I2C.h>  // F Malpartida's NewLiquidCrystal library
 // download the repository from here and put it in your documents/arduino/libraries folder and restart your ide 
 // https://bitbucket.org/fmalpartida/new-liquidcrystal/downloads
+/*
+LiquidCrystal_I2C_ByVac.h
+
+change from 
+#include <Arduino.h>
+to
+#include <WProgram.h>
+#else
+#include <Arduino.h>
+#endif
+*/
 
 #include "I2C_lcd.h"
 
