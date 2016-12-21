@@ -32,17 +32,10 @@ to
 #endif
 */
 
+#include "lcd_play.h"
 #include "I2C_lcd.h"
 
-#define STATUS_OK 0
-#define STATUS_SD 1
-#define STATUS_ERROR 2
 
-#define ERROR_CODE_NO_ERROR 0
-#define ERROR_CODE_HOTEND_TEMPERATURE 1
-#define ERROR_CODE_BED_TEMPERATURE 2
-
-#define NUM_AXIS 4
 
 int tt    = 0 ;                               // hook to Extruder temperature in C
 int bt    = 0 ;                               // hook to Heated Bed temperature in C
@@ -55,8 +48,16 @@ int error_code = ERROR_CODE_NO_ERROR;         // hook to error status: 0=Nothing
 
 float current_position[NUM_AXIS] = { 120.9, 1.0, 2.1, 0.0};
 const char* error_code_str[]     = { "No Error", "Hotend", "Bed" };
-const char* status_str[]         = { "Ok", "SD", "Error"};
+const char* status_str[]         = { "Ok", "SD", "Error", "Job done", "Pause", "Job Killed" };
 
+const char* pszFirmwareName      = "Sprinter" ;
+const char* pszFirmwareURL       = "https://github.com/smalcolmbrown/V3-Sprinter-Melzi_1_00/" ;
+const char* pszProtocolVersion   = "1.01" ;
+const char* pszMachineType       = "Vector 3 3D Printer" ;
+const int iExtruderCount         = 1;
+const char* uuid                 = "Sn009128-V300-0000-0000-000000000000";
+
+//SerialMgr.cur()->print("FIRMWARE_NAME:Sprinter FIRMWARE_URL:http%%3A/github.com/kliment/Sprinter/ PROTOCOL_VERSION:1.0 MACHINE_TYPE:Mendel EXTRUDER_COUNT:1 UUID:");
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //
