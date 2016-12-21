@@ -50,4 +50,6 @@
 
   void SplashScreen();
   void StatusScreen();
+  void DisplayAxisPosition( int iAxis );
+  void DisplayBedAndExtruderTemparature();
 #endif

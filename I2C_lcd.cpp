@@ -13,6 +13,18 @@
 // download the repository from here and put it in your documents/arduino/libraries folder and restart your ide 
 // https://bitbucket.org/fmalpartida/new-liquidcrystal/downloads
 // adaptations needed to work with arduino version 0023
+/*
+in LiquidCrystal_I2C_ByVac.h
+
+change from 
+#include <Arduino.h>
+to
+#if (ARDUINO <  100)
+  #include <WProgram.h>
+#else
+  #include <Arduino.h>
+#endif
+*/
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -53,6 +65,9 @@ extern const char* status_str[] ;              // hook status strings
 extern const char* error_code_str[] ;          // hook to error strings
 
 char  szTemp[41];                              // temp work aria for sprintf
+char  szT[41] ;                                // workspace for float to string conversions
+bool  bNewStatusScreen = true;
+float faOldPosition[NUM_AXIS] = { -1, -1, -1, 0.0};
 
 LiquidCrystal_I2C  lcd(I2C_ADDR,En_pin,Rw_pin,Rs_pin,D4_pin,D5_pin,D6_pin,D7_pin);
 
@@ -64,42 +79,37 @@ LiquidCrystal_I2C  lcd(I2C_ADDR,En_pin,Rw_pin,Rs_pin,D4_pin,D5_pin,D6_pin,D7_pin
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 void StatusScreen(){
-  char szT[40] ;    // workspace
-  lcd.clear();
-  lcd.home();
+  
+  if( bNewStatusScreen ) {
+    lcd.clear();
+    lcd.home();
+    bNewStatusScreen=false;
+  }
   
   // do first line 
-  
+  DisplayBedAndExtruderTemparature();
+  /*
   // extruder 
   lcd.setCursor( 0, 0 ); 
-  sprintf( szTemp, "%c%d/%d%c", 0x5c, tt, ett, 0xdf );
+  sprintf( szTemp, "%c%d/%d%c     ", 0x5c, tt, ett, 0xdf );
+  *(SzTemp+10) = 0;               // truncate to 10 letters
   lcd.print( szTemp );
   // heated bed
   lcd.setCursor( 10, 0 ); 
-  sprintf( szTemp, "%c%d/%d%c", 0xfc, bt, btt, 0xdf );
+  sprintf( szTemp, "%c%d/%d%c     ", 0xfc, bt, btt, 0xdf );
+  *(SzTemp+10) = 0;               // truncate to 10 letters
   lcd.print( szTemp );
-
+  */
   // do second line
-  
-  lcd.setCursor( 0, 1 );
-  ConvertleadingSpacesToZeros( dtostrf( current_position[0], NUM_DIGITS, NUM_PRECISION, szT) );
-  sprintf( szTemp, "X%s", szT+2 );
-  lcd.print( szTemp );
-  
-  lcd.setCursor(7,1);
-  ConvertleadingSpacesToZeros( dtostrf( current_position[1], NUM_DIGITS, NUM_PRECISION, szT) );
-  sprintf( szTemp, "Y%s", szT+2 );
-  lcd.print(szTemp);
-  
-  lcd.setCursor(14,1);
-  ConvertleadingSpacesToZeros( dtostrf( current_position[2], NUM_DIGITS, NUM_PRECISION, szT) );
-  sprintf( szTemp, "Z%s", szT+2 );
-  lcd.print(szTemp);
+
+  DisplayAxisPosition( 0 );
+  DisplayAxisPosition( 1 );
+  DisplayAxisPosition( 2 );
 
   // do third line
   
   lcd.setCursor( 0, 2 ); 
-  sprintf( szTemp, "Fan %s", (bFanOn)? "On" : "Off" );
+  sprintf( szTemp, "Fan %s", (bFanOn)? "On " : "Off" );
   lcd.print( szTemp );
 
   // do fourth line
@@ -136,6 +146,43 @@ void SplashScreen() {
   lcd.setCursor(6,3);
   lcd.print("Sprinter");
   delay(4000);
+  bNewStatusScreen = true;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// void DisplayBedAndExtruderTemparature()
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+void DisplayBedAndExtruderTemparature() {
+  // extruder 
+  lcd.setCursor( 0, 0 ); 
+  sprintf( szTemp, "%c%d/%d%c     ", 0x5c, tt, ett, 0xdf );
+  *(szTemp+10) = 0;               // truncate to 10 letters
+  lcd.print( szTemp );
+  // heated bed
+  lcd.setCursor( 10, 0 ); 
+  sprintf( szTemp, "%c%d/%d%c     ", 0xfc, bt, btt, 0xdf );
+  *(szTemp+10) = 0;               // truncate to 10 letters
+  lcd.print( szTemp );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// void DisplayAxisPosition( int iAxis )
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+void DisplayAxisPosition( int iAxis ) {
+  if( faOldPosition[iAxis] != current_position[iAxis] ) {
+    lcd.setCursor( 7*iAxis, 1 );
+    ConvertleadingSpacesToZeros( dtostrf( current_position[iAxis], NUM_DIGITS, NUM_PRECISION, szT) );
+    sprintf( szTemp, "%c%s", 'X'+iAxis, szT+2 );
+    lcd.print( szTemp );
+    faOldPosition[iAxis] = current_position[iAxis] ;
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
