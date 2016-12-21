@@ -136,11 +136,9 @@ void SplashScreen() {
   lcd.home();
   lcd.setCursor(0,0); 
   lcd.print( pszMachineType );
-  lcd.setCursor(3,1);
-  lcd.print("Version  V");
-  lcd.setCursor(3,1);
-  lcd.print("Version  V");
-  lcd.print( pszProtocolVersion );
+  sprintf(szTemp, "V %s Dev", pszProtocolVersion );
+  lcd.setCursor(10-(strlen(szTemp)/2),1);
+  lcd.print(szTemp);
   lcd.setCursor(0,2);
   strncpy( szTemp, uuid, 20) ;
   lcd.print( szTemp );
