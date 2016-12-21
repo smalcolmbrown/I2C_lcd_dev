@@ -57,6 +57,14 @@ float current_position[NUM_AXIS] = { 120.9, 1.0, 2.1, 0.0};
 const char* error_code_str[]     = { "No Error", "Hotend", "Bed" };
 const char* status_str[]         = { "Ok", "SD", "Error"};
 
+const char* pszFirmwareName      = "Sprinter" ;
+const char* pszFirmwareURL       = "https://github.com/smalcolmbrown/V3-Sprinter-Melzi_1_00/" ;
+const char* pszProtocolVersion   = "1.01" ;
+const char* pszMachineType       = "Vector 3 3D Printer" ;
+const int iExtruderCount         = 1;
+const char* uuid                 = "Sn009128-V300-0000-0000-000000000000";
+
+//SerialMgr.cur()->print("FIRMWARE_NAME:Sprinter FIRMWARE_URL:http%%3A/github.com/kliment/Sprinter/ PROTOCOL_VERSION:1.0 MACHINE_TYPE:Mendel EXTRUDER_COUNT:1 UUID:");
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //

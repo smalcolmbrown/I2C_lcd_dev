@@ -63,11 +63,19 @@ extern int status ;                            // hook to printer status
 extern int error_code ;                        // hook to error status 0=Nothing, 1=Heater thermistor error, 2= bed
 extern const char* status_str[] ;              // hook status strings
 extern const char* error_code_str[] ;          // hook to error strings
+extern const char* pszFirmwareName ;           // hook to Firmware name
+extern const char* pszFirmwareURL[] ;          // hook to firmware url
+extern const char* pszProtocolVersion ;        // hook to error strings
+extern const char* pszMachineType ;            // hook to error strings
+extern int iExtruderCount ;                    // hook to error strings
+extern const char* uuid ;                      // hook to error UUID string
 
 char  szTemp[41];                              // temp work aria for sprintf
 char  szT[41] ;                                // workspace for float to string conversions
 bool  bNewStatusScreen = true;
 float faOldPosition[NUM_AXIS] = { -1, -1, -1, 0.0};
+
+
 
 LiquidCrystal_I2C  lcd(I2C_ADDR,En_pin,Rw_pin,Rs_pin,D4_pin,D5_pin,D6_pin,D7_pin);
 
@@ -85,26 +93,12 @@ void StatusScreen(){
     lcd.home();
     bNewStatusScreen=false;
   }
-  
-  // do first line 
-  DisplayBedAndExtruderTemparature();
-  /*
-  // extruder 
-  lcd.setCursor( 0, 0 ); 
-  sprintf( szTemp, "%c%d/%d%c     ", 0x5c, tt, ett, 0xdf );
-  *(SzTemp+10) = 0;               // truncate to 10 letters
-  lcd.print( szTemp );
-  // heated bed
-  lcd.setCursor( 10, 0 ); 
-  sprintf( szTemp, "%c%d/%d%c     ", 0xfc, bt, btt, 0xdf );
-  *(SzTemp+10) = 0;               // truncate to 10 letters
-  lcd.print( szTemp );
-  */
-  // do second line
-
-  DisplayAxisPosition( 0 );
-  DisplayAxisPosition( 1 );
-  DisplayAxisPosition( 2 );
+                                                     // do first line
+  DisplayBedAndExtruderTemparature();                // display Extruder and heated bed temparture
+                                                     // do second line
+  DisplayAxisPosition( 0 );                          // X Axis position
+  DisplayAxisPosition( 1 );                          // Y Axis position
+  DisplayAxisPosition( 2 );                          // Axis Y position
 
   // do third line
   
@@ -117,12 +111,12 @@ void StatusScreen(){
   lcd.setCursor(0,3);
   if( status == STATUS_ERROR ){
     if(error_code){
-      sprintf( szTemp, "Error: %s", error_code_str[error_code] );
+      sprintf( szTemp, "Error: %s          ", error_code_str[error_code] );
       lcd.print( szTemp );
     }
   } else {
     // no error
-    sprintf( szTemp, "Sprinter: %s", status_str[status]);
+    sprintf( szTemp, "%s: %s", pszFirmwareName, status_str[status]);
     lcd.print( szTemp );
   }
 }
@@ -140,11 +134,18 @@ void SplashScreen() {
   lcd.clear();
   lcd.home();
   lcd.setCursor(0,0); 
-  lcd.print("Vector 3 3D Printer");
+  lcd.print( pszMachineType );
   lcd.setCursor(3,1);
-  lcd.print("Version  V1.01");
-  lcd.setCursor(6,3);
-  lcd.print("Sprinter");
+  lcd.print("Version  V");
+  lcd.setCursor(3,1);
+  lcd.print("Version  V");
+  lcd.print( pszProtocolVersion );
+  lcd.setCursor(0,2);
+  strncpy( szTemp, uuid, 20) ;
+  lcd.print( szTemp );
+  lcd.setCursor(0,3);
+  strncpy( szTemp, uuid+20, 20) ;
+  lcd.print( szTemp );
   delay(4000);
   bNewStatusScreen = true;
 }
