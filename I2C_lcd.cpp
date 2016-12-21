@@ -87,16 +87,19 @@ void StatusScreen(){
   }
   
   // do first line 
-  
+  DisplayBedAndExtruderTemparature();
+  /*
   // extruder 
   lcd.setCursor( 0, 0 ); 
-  sprintf( szTemp, "%c%d/%d%c", 0x5c, tt, ett, 0xdf );
+  sprintf( szTemp, "%c%d/%d%c     ", 0x5c, tt, ett, 0xdf );
+  *(SzTemp+10) = 0;               // truncate to 10 letters
   lcd.print( szTemp );
   // heated bed
   lcd.setCursor( 10, 0 ); 
-  sprintf( szTemp, "%c%d/%d%c", 0xfc, bt, btt, 0xdf );
+  sprintf( szTemp, "%c%d/%d%c     ", 0xfc, bt, btt, 0xdf );
+  *(SzTemp+10) = 0;               // truncate to 10 letters
   lcd.print( szTemp );
-
+  */
   // do second line
 
   DisplayAxisPosition( 0 );
@@ -106,7 +109,7 @@ void StatusScreen(){
   // do third line
   
   lcd.setCursor( 0, 2 ); 
-  sprintf( szTemp, "Fan %s", (bFanOn)? "On" : "Off" );
+  sprintf( szTemp, "Fan %s", (bFanOn)? "On " : "Off" );
   lcd.print( szTemp );
 
   // do fourth line
@@ -145,6 +148,26 @@ void SplashScreen() {
   delay(4000);
   bNewStatusScreen = true;
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// void DisplayBedAndExtruderTemparature()
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+void DisplayBedAndExtruderTemparature() {
+  // extruder 
+  lcd.setCursor( 0, 0 ); 
+  sprintf( szTemp, "%c%d/%d%c     ", 0x5c, tt, ett, 0xdf );
+  *(szTemp+10) = 0;               // truncate to 10 letters
+  lcd.print( szTemp );
+  // heated bed
+  lcd.setCursor( 10, 0 ); 
+  sprintf( szTemp, "%c%d/%d%c     ", 0xfc, bt, btt, 0xdf );
+  *(szTemp+10) = 0;               // truncate to 10 letters
+  lcd.print( szTemp );
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //
