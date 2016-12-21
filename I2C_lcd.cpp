@@ -14,14 +14,15 @@
 // https://bitbucket.org/fmalpartida/new-liquidcrystal/downloads
 // adaptations needed to work with arduino version 0023
 /*
-LiquidCrystal_I2C_ByVac.h
+in LiquidCrystal_I2C_ByVac.h
 
 change from 
 #include <Arduino.h>
 to
-#include <WProgram.h>
+#if (ARDUINO <  100)
+  #include <WProgram.h>
 #else
-#include <Arduino.h>
+  #include <Arduino.h>
 #endif
 */
 
