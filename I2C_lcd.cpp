@@ -7,6 +7,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#include "lcd_play.h"
 #include "I2C_lcd.h"
 #include <LCD.h>
 #include <LiquidCrystal_I2C.h>  // F Malpartida's NewLiquidCrystal library
@@ -63,11 +64,7 @@ extern int status ;                            // hook to printer status
 extern int error_code ;                        // hook to error status 0=Nothing, 1=Heater thermistor error, 2= bed
 extern const char* status_str[] ;              // hook status strings
 extern const char* error_code_str[] ;          // hook to error strings
-extern const char* pszFirmwareName ;           // hook to Firmware name
-extern const char* pszFirmwareURL[] ;          // hook to firmware url
-extern const char* pszProtocolVersion ;        // hook to error strings
-extern const char* pszMachineType ;            // hook to error strings
-extern int iExtruderCount ;                    // hook to error strings
+extern const char* pszFirmware[] ;             // hook to Firmware strings
 extern const char* uuid ;                      // hook to error UUID string
 
 char  szTemp[41];                              // temp work aria for sprintf
@@ -116,7 +113,7 @@ void StatusScreen(){
     }
   } else {
     // no error
-    sprintf( szTemp, "%s: %s", pszFirmwareName, status_str[status]);
+    sprintf( szTemp, "%s: %s", pszFirmware[FIRMWARE_NAME], status_str[status]);
     lcd.print( szTemp );
   }
 }
@@ -134,12 +131,10 @@ void SplashScreen() {
   lcd.clear();
   lcd.home();
   lcd.setCursor(0,0); 
-  lcd.print( pszMachineType );
-  lcd.setCursor(3,1);
-  lcd.print("Version  V");
-  lcd.setCursor(3,1);
-  lcd.print("Version  V");
-  lcd.print( pszProtocolVersion );
+  lcd.print( pszFirmware[FIRMWARE_MACHINENAME] );
+  sprintf(szTemp, "V %s Dev", pszFirmware[FIRMWARE_VERSION] );
+  lcd.setCursor(10-(strlen(szTemp)/2),1);
+  lcd.print(szTemp);
   lcd.setCursor(0,2);
   strncpy( szTemp, uuid, 20) ;
   lcd.print( szTemp );
